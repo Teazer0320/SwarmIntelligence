@@ -1,6 +1,7 @@
 #include <iostream>
 #include <vector>
 #include <float.h>
+#include <string>
 
 #ifndef ALG_H
 #define ALG_H
@@ -12,32 +13,37 @@ using namespace std;
 class HHO
 {
 public:
-    HHO(int N, int D, int MaxEval, int func_num)
+    HHO(int N, int D, int MaxEval, int func_num, string fileName)
     {
         this->N = N;
         this->D = D;
         this->MaxEval = MaxEval;
         this->func_num = func_num;
+        this->fileName = fileName;
     }
+    ~HHO() { cout << "HHO Destructor" << endl; }
     void RunALG();
     int N;       // Number of population
     int D;       // Dimension
     int MaxEval; // Maximum number of evaluations
     int func_num;
     int RUN = 30;
+    string fileName; // file Name
 
 private:
     /* Variables */
     vector<vector<double>> Hawks; // Population
     int CurEval = 0;              // Current number of evaluations
     int nowEval;                  // Current number of evaluations
-    double rabbit_fit = DBL_MAX;  // Fitness of current rabbit
-    double E0, E;                 // initial Escape energy, Escaping energy
-    double Jump_len;              // jump strength
-    double lb, ub;                // Lower and upper bounds of the search space
-    double chance_q;              // Probability of rabbit being selected as the prey
-    vector<double> rabbit;        // Rabbit position
+    int CurRun = 0;
+    double rabbit_fit = DBL_MAX; // Fitness of current rabbit
+    double E0, E;                // initial Escape energy, Escaping energy
+    double Jump_len;             // jump strength
+    double lb, ub;               // Lower and upper bounds of the search space
+    double chance_q;             // Probability of rabbit being selected as the prey
+    vector<double> rabbit;       // Rabbit position
     vector<double> Xavg;
+    vector<double> outputData; // The result in every run
     /* Functions */
     void init();
     void Besiege_Soft();   // Soft besiege

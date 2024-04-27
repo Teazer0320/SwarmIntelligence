@@ -16,8 +16,9 @@ int main(int argc, char const *argv[])
     int N = atoi(argv[1]);
     for (int i = 0; i < ArraySize(Dimension); i++)
     {
-        cout << Dimension[i] << " ";
-        HHO Alg(N, Dimension[0], EVAL(Dimension[0]), FuncNum(argv[2]));
+        string fileName = "Output/" + string(argv[2]) + "_" + to_string(Dimension[i]) + "D.txt";
+        cout << fileName << endl;
+        HHO Alg(N, Dimension[i], EVAL(Dimension[i]), FuncNum(argv[2]), fileName);
         Alg.RunALG();
     }
 

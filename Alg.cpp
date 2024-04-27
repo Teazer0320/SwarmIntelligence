@@ -5,6 +5,7 @@
 #include <iostream>
 #include <chrono>
 #include <cmath>
+#include <fstream>
 
 using namespace std;
 
@@ -30,9 +31,9 @@ double random_double(double lower_bound, double upper_bound)
 void HHO::RunALG()
 {
     init();
-    while (MaxEval > CurEval)
+    while (MaxEval > CurEval && CurRun < RUN)
     {
-
+        // cout << "CurEval: " << CurEval << " CurRun: " << CurRun << endl;
         /* calculate fitness and set rabbit */
         for (int i = 0; i < N; ++i)
         {
@@ -80,8 +81,19 @@ void HHO::RunALG()
                     RapidDive_Hard();
             }
         }
+        outputData.push_back(rabbit_fit);
+        CurRun += 1;
     }
-    cout << "Rabbit_fit: " << rabbit_fit << endl;
+
+    /* Write output file */
+    ofstream f;
+    f.open(fileName);
+    for (int i = 0; i < outputData.size(); i++)
+    {
+        // cout << outputData[i] << endl;
+        f << outputData[i] << endl;
+    }
+    f.close();
 }
 
 void HHO::init()
