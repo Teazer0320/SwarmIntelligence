@@ -35,3 +35,8 @@ This file
 A master sudent studying in NSYSU AILab.
 
 Student ID: M123140005
+
+## Reference
+
+1. [HHO python](https://github.com/cahitberkay/Harris-Hawks-Optimization-HHO---Python-Code/blob/master/HHO.pom/cahitberkay/Harris-Hawks-Optimization-HHO---Python-Code/blob/master/HHO.py)
+2. paper- Harris hawks optimization: Algorithm and applications
