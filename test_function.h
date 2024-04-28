@@ -54,7 +54,6 @@ void set_search_bound(double *upper_bound, double *lower_bound, const int func_n
     }
 }
 
-// 個體座標 *x, 維度 d, 函數編號 func_num
 double calculate_test_function(const double *x, const int d, const int func_num)
 {
     double f = DBL_MAX;

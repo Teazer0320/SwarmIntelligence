@@ -5,7 +5,6 @@
 #include <iostream>
 #include <chrono>
 #include <cmath>
-#include <fstream>
 
 using namespace std;
 
@@ -31,14 +30,15 @@ double random_double(double lower_bound, double upper_bound)
 void HHO::RunALG()
 {
     init();
-    while (MaxEval > CurEval && CurRun < RUN)
+    while (MaxEval > CurEval)
     {
         // cout << "CurEval: " << CurEval << " CurRun: " << CurRun << endl;
         /* calculate fitness and set rabbit */
         for (int i = 0; i < N; ++i)
         {
             CurEval += 1;
-            double fit = Fitness(Hawks[i], func_num);
+            double fit = Fitness(&Hawks[i][0], func_num);
+            // double fit = Fitness(Hawks[i], func_num);
             if (fit < rabbit_fit)
             {
                 rabbit_fit = fit;
@@ -52,6 +52,7 @@ void HHO::RunALG()
         {
             E0 = 2 * random_double(-1.0, 1.0) - 1; // E0 = [-1, 1]
             E = 2 * E0 * (1 - CurEval / MaxEval);
+            Jump_len = 2 * (1 - random_double(0.0, 1.0));
             double r = random_double(0.0, 1.0);
             if (abs(E) >= 1) /* Exploration phase */
             {
@@ -81,25 +82,20 @@ void HHO::RunALG()
                     RapidDive_Hard();
             }
         }
-        outputData.push_back(rabbit_fit);
-        CurRun += 1;
     }
-
-    /* Write output file */
-    ofstream f;
-    f.open(fileName);
-    for (int i = 0; i < outputData.size(); i++)
-    {
-        // cout << outputData[i] << endl;
-        f << outputData[i] << endl;
-    }
-    f.close();
 }
 
 void HHO::init()
 {
     Hawks.resize(N, vector<double>(D));
     set_search_bound(&ub, &lb, func_num);
+    CurEval = 0;
+    rabbit_fit = DBL_MAX;
+    E0 = 0;
+    E = 0;
+    Jump_len = 0;
+    rabbit.clear();
+    Xavg.clear();
 
     /* Set inintial Hawks positions */
     for (int i = 0; i < N; ++i)
@@ -123,7 +119,7 @@ void HHO::Show_Hawks()
 void HHO::Besiege_Soft()
 {
     // cout << "Besiege_Soft" << endl;
-    Jump_len = 2 * (1 - random_double(0.0, 1.0));
+    // Jump_len = 2 * (1 - random_double(0.0, 1.0));
 
     for (int i = 0; i < N; i++)
     {
@@ -167,9 +163,9 @@ void HHO::RapidDive_Soft()
             Y[j] = rabbit[j] - E * abs(Jump_len * rabbit[j] - Hawks[i][j]); // Equation(7)
             Z[j] = Y[j] + S[j] * LevyFlight(D);                             // Equation(8)
         }
-        double cur_fit = Fitness(Hawks[i], func_num);
-        double Y_fit = Fitness(Y, func_num);
-        double Z_fit = Fitness(Z, func_num);
+        double cur_fit = Fitness(&Hawks[i][0], func_num);
+        double Y_fit = Fitness(&Y[0], func_num);
+        double Z_fit = Fitness(&Z[0], func_num);
 
         if (Y_fit < cur_fit) // Equation(10)
             Hawks[i] = Y;
@@ -195,9 +191,9 @@ void HHO::RapidDive_Hard()
             Y[j] = rabbit[j] - E * abs(Jump_len * rabbit[j] - Xavg[j]); // Equation(12)
             Z[j] = Y[j] + S[j] * LevyFlight(D);                         // Equation(13)
         }
-        double cur_fit = Fitness(Hawks[i], func_num);
-        double Y_fit = Fitness(Y, func_num);
-        double Z_fit = Fitness(Z, func_num);
+        double cur_fit = Fitness(&Hawks[i][0], func_num);
+        double Y_fit = Fitness(&Y[0], func_num);
+        double Z_fit = Fitness(&Z[0], func_num);
 
         if (Y_fit < cur_fit) // Equation(10)
             Hawks[i] = Y;
@@ -206,10 +202,22 @@ void HHO::RapidDive_Hard()
     }
 }
 
-double HHO::Fitness(vector<double> x, int funcNum)
+// double HHO::Fitness(vector<double> x, int funcNum)
+double HHO::Fitness(const double *x, int funcNum)
 {
     CurEval += 1;
-    return calculate_test_function(x.data(), D, funcNum);
+    double f = calculate_test_function(x, D, funcNum);
+    // double f = calculate_test_function(x.data(), D, funcNum);
+    // if (f < 0)
+    // {
+    //     cout << "Fitness < 0" << endl;
+    //     cout << "f: " << f << endl;
+    //     cout << "x: ";
+    //     for (int i = 0; i < D; i++)
+    //         cout << x[i] << " ";
+    //     cout << endl;
+    // }
+    return f;
 }
 
 double HHO::LevyFlight(int x) // Equation(9)
@@ -225,4 +233,22 @@ double HHO::LevyFlight(int x) // Equation(9)
 
     // 計算新位置
     return x + step_size;
+}
+
+double HHO::GetResult()
+{
+    // for (int i = 0; i < rabbit.size(); i++)
+    //     cout << rabbit[i] << " ";
+    // cout << endl;
+    return rabbit_fit;
+}
+
+double HHO::CheckBoundary(double x)
+{
+    if (x > ub)
+        return ub;
+    else if (x < lb)
+        return lb;
+    else
+        return x;
 }

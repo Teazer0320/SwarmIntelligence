@@ -21,29 +21,27 @@ public:
         this->func_num = func_num;
         this->fileName = fileName;
     }
-    ~HHO() { cout << "HHO Destructor" << endl; }
+    // ~HHO() { cout << "HHO Destructor" << endl; }
     void RunALG();
     int N;       // Number of population
     int D;       // Dimension
     int MaxEval; // Maximum number of evaluations
     int func_num;
-    int RUN = 30;
     string fileName; // file Name
+    double GetResult();
 
 private:
     /* Variables */
     vector<vector<double>> Hawks; // Population
     int CurEval = 0;              // Current number of evaluations
-    int nowEval;                  // Current number of evaluations
-    int CurRun = 0;
-    double rabbit_fit = DBL_MAX; // Fitness of current rabbit
-    double E0, E;                // initial Escape energy, Escaping energy
-    double Jump_len;             // jump strength
-    double lb, ub;               // Lower and upper bounds of the search space
-    double chance_q;             // Probability of rabbit being selected as the prey
-    vector<double> rabbit;       // Rabbit position
+    double rabbit_fit = DBL_MAX;  // Fitness of current rabbit
+    double E0, E;                 // initial Escape energy, Escaping energy
+    double Jump_len;              // jump strength
+    double lb, ub;                // Lower and upper bounds of the search space
+    double chance_q;              // Probability of rabbit being selected as the prey
+    vector<double> rabbit;        // Rabbit position
     vector<double> Xavg;
-    vector<double> outputData; // The result in every run
+
     /* Functions */
     void init();
     void Besiege_Soft();   // Soft besiege
@@ -52,7 +50,9 @@ private:
     void RapidDive_Hard(); // Hard besiege with progressive rapid dives
     void Show_Hawks();
     double LevyFlight(int x);
-    double Fitness(vector<double> x, int funcNum);
+    // double Fitness(vector<double> x, int funcNum);
+    double Fitness(const double *x, int funcNum);
+    double CheckBoundary(double x);
 };
 
 #endif
